@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Dashboard - Smart Campus Maintenance</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="sidebar-backdrop"></div>
+
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fas fa-broom"></i>
+        </div>
+        <div class="brand-text">
+          <h2>Smart Campus</h2>
+          <p>Staff Operations</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">My Operations</div>
+        <a href="/staff.html" class="nav-item active">
+          <i class="fas fa-clipboard-check"></i>
+          <span>My Assigned Tasks</span>
+        </a>
+        <a href="/report.html" class="nav-item">
+          <i class="fas fa-plus-circle"></i>
+          <span>Report New Issue</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span style="font-size: 11px; color: #64748b;">Staff Portal &bull; HMI</span>
+        <button class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" aria-label="Toggle Menu">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="page-title-box">
+            <h1>Cleaning & Maintenance Work Queue</h1>
+            <p>View your assigned tasks, initiate work, and submit completion reports</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+            <i class="fas fa-moon"></i>
+          </button>
+
+          <div class="user-profile-badge">
+            <div class="user-avatar" id="topbar-user-avatar">S</div>
+            <div class="user-info">
+              <span class="user-name" id="topbar-user-name">Staff Member</span>
+              <span class="user-role-tag" id="topbar-user-role">STAFF</span>
+            </div>
+          </div>
+
+          <button class="btn-logout" id="logout-btn" title="Logout">
+            <i class="fas fa-arrow-right-from-bracket"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-container">
+
+        <!-- Staff Workload Counters -->
+        <div class="stats-grid">
+          <div class="stat-card stat-total">
+            <div class="stat-icon"><i class="fas fa-list-check"></i></div>
+            <div class="stat-content">
+              <span class="stat-value" id="staff-stat-total">0</span>
+              <span class="stat-label">Assigned to Me</span>
+            </div>
+          </div>
+
+          <div class="stat-card stat-inprogress">
+            <div class="stat-icon"><i class="fas fa-person-digging"></i></div>
+            <div class="stat-content">
+              <span class="stat-value" id="staff-stat-active">0</span>
+              <span class="stat-label">Currently In Progress</span>
+            </div>
+          </div>
+
+          <div class="stat-card stat-completed">
+            <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
+            <div class="stat-content">
+              <span class="stat-value" id="staff-stat-done">0</span>
+              <span class="stat-label">Tasks Completed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Tab Buttons -->
+        <div style="display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+          <div class="chip-group" id="status-tabs">
+            <button type="button" class="btn btn-sm btn-primary tab-btn active" data-status="all">
+              All Tasks (<span id="tab-count-all">0</span>)
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary tab-btn" data-status="Assigned">
+              To Do (<span id="tab-count-assigned">0</span>)
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary tab-btn" data-status="In Progress">
+              In Progress (<span id="tab-count-inprogress">0</span>)
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary tab-btn" data-status="Completed">
+              Completed (<span id="tab-count-completed">0</span>)
+            </button>
+          </div>
+
+          <button class="btn btn-secondary btn-sm" id="btn-refresh-tasks">
+            <i class="fas fa-arrows-rotate"></i> Refresh Tasks
+          </button>
+        </div>
+
+        <!-- Loading State -->
+        <div id="tasks-loading" style="text-align: center; padding: 60px; color: var(--text-muted);">
+          <i class="fas fa-circle-notch fa-spin" style="font-size: 28px; color: var(--primary-600); margin-bottom: 12px;"></i>
+          <p style="font-size: 14px;">Loading your tasks...</p>
+        </div>
+
+        <!-- Task Cards Grid -->
+        <div id="tasks-grid" class="issues-grid" style="display: none;">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="tasks-empty" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">
+            <i class="fas fa-mug-hot"></i>
+          </div>
+          <h3>All Caught Up!</h3>
+          <p>You have no pending maintenance tasks assigned in this status view. Great job keeping the campus clean and well-maintained!</p>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Completion Note Modal (HMI Best Practice) -->
+  <div class="modal-backdrop" id="completion-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-check-circle" style="color: var(--status-completed);"></i>
+          <span>Complete Maintenance Task</span>
+        </h3>
+        <button class="modal-close-btn" id="completion-modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          You are marking Issue <strong id="completion-modal-issue-id" style="font-family: var(--font-mono); color: var(--primary-700);">#--</strong> as Completed. Please record any notes or parts replaced for the campus log.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="completion-note-input">
+            Work Completion Note <span class="required">*</span>
+          </label>
+          <textarea id="completion-note-input" class="form-control" placeholder="e.g. Cleared drain blockage, sanitized floor area, tested water pressure." rows="3" required></textarea>
+          <span class="form-hint">Brief note of what was done to resolve the issue.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="completion-modal-cancel">Cancel</button>
+        <button type="button" class="btn btn-success" id="completion-modal-confirm">
+          <i class="fas fa-check"></i> Submit & Mark Completed
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail & Timeline Modal -->
+  <div class="modal-backdrop" id="detail-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-detail-title">Task Details & Timeline</h3>
+        <button class="modal-close-btn" id="modal-detail-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body" id="modal-detail-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-detail-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/staff.js"></script>
+</body>
+</html>

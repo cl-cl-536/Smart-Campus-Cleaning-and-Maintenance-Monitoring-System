@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Issue - Smart Campus Maintenance</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="sidebar-backdrop"></div>
+
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fas fa-building-shield"></i>
+        </div>
+        <div class="brand-text">
+          <h2>Smart Campus</h2>
+          <p>Maintenance Portal</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Main Menu</div>
+        <a href="#report-section" class="nav-item active" id="nav-report-link">
+          <i class="fas fa-plus-circle"></i>
+          <span>Report New Issue</span>
+        </a>
+        <a href="#my-reports-section" class="nav-item" id="nav-my-reports-link">
+          <i class="fas fa-list-check"></i>
+          <span>My Reports</span>
+        </a>
+
+        <!-- Role-Specific Shortcuts (Visible if Admin/Supervisor) -->
+        <div id="elevated-nav-links" style="display: none;">
+          <div class="nav-label">Management</div>
+          <a href="/supervisor.html" class="nav-item" id="nav-supervisor-link">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Supervisor Board</span>
+          </a>
+          <a href="/admin.html" class="nav-item" id="nav-admin-link">
+            <i class="fas fa-chart-pie"></i>
+            <span>Admin Center</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span style="font-size: 11px; color: #64748b;">System v1.0 - HMI</span>
+        <button class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" aria-label="Toggle Menu">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="page-title-box">
+            <h1>Campus Maintenance Reporter</h1>
+            <p>Report cleaning or facility issues and track repair progress</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+            <i class="fas fa-moon"></i>
+          </button>
+          
+          <div class="user-profile-badge">
+            <div class="user-avatar" id="topbar-user-avatar">R</div>
+            <div class="user-info">
+              <span class="user-name" id="topbar-user-name">Alex Johnson</span>
+              <span class="user-role-tag" id="topbar-user-role">REPORTER</span>
+            </div>
+          </div>
+
+          <button class="btn-logout" id="logout-btn" title="Logout">
+            <i class="fas fa-arrow-right-from-bracket"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Container -->
+      <div class="page-container">
+        
+        <!-- SECTION 1: Report Issue Form -->
+        <section id="report-section" style="max-width: 920px; margin: 0 auto;">
+          <div class="card" style="margin-bottom: 30px;">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fas fa-pen-to-square" style="color: var(--primary-600);"></i>
+                <span>Submit a Maintenance or Cleaning Request</span>
+              </div>
+              <span style="font-size: 12px; color: var(--text-muted);"><span style="color: #ef4444;">*</span> Required fields</span>
+            </div>
+
+            <!-- Success Alert -->
+            <div id="report-success-alert" style="display: none; background: #ecfdf5; border: 1px solid #6ee7b7; border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 24px;">
+              <div style="display: flex; align-items: flex-start; gap: 14px;">
+                <i class="fas fa-circle-check" style="color: #059669; font-size: 24px; margin-top: 2px;"></i>
+                <div style="flex: 1;">
+                  <h4 style="font-size: 16px; font-weight: 700; color: #065f46; margin-bottom: 4px;">Issue Submitted Successfully!</h4>
+                  <p style="font-size: 13px; color: #047857; margin-bottom: 12px;">
+                    Your request has been logged with Tracking ID: <strong id="success-issue-id" style="font-family: var(--font-mono); font-size: 14px; background: #d1fae5; padding: 2px 8px; border-radius: 4px;">#101</strong>. Campus facility supervisors will review and assign staff shortly.
+                  </p>
+                  <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-sm btn-success" id="btn-view-submitted">
+                      <i class="fas fa-eye"></i> View in My Reports
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" id="btn-report-another">
+                      <i class="fas fa-plus"></i> Report Another
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="report-form-error" style="display: none; background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 12px 16px; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; margin-bottom: 20px; align-items: center; gap: 8px;">
+              <i class="fas fa-circle-exclamation"></i>
+              <span id="report-form-error-text">Please complete all required fields.</span>
+            </div>
+
+            <!-- Form -->
+            <form id="issue-report-form" enctype="multipart/form-data">
+              
+              <!-- SECTION A: Location Details -->
+              <div style="margin-bottom: 24px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);">
+                  <span style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary-100); color: var(--primary-700); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">1</span>
+                  <h3 style="font-size: 15px; font-weight: 700; color: var(--text-main);">Location Details</h3>
+                </div>
+
+                <div class="form-two-col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;">
+                  <!-- Campus Zone / Area -->
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="zone">Campus Zone / Area <span class="required">*</span></label>
+                    <select id="zone" name="zone" class="form-select" required>
+                      <option value="" disabled selected>Select Campus Zone...</option>
+                      <option value="College Building">College Building</option>
+                      <option value="Euphoria Stairs">Euphoria Stairs</option>
+                      <option value="Canteen">Canteen</option>
+                      <option value="Open Canteen">Open Canteen</option>
+                      <option value="Samvad">Samvad</option>
+                      <option value="Backcourt">Backcourt</option>
+                    </select>
+                    <span class="form-hint" id="zone-hint">Primary campus zone or facility</span>
+                  </div>
+
+                  <!-- Floor No -->
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="floor">Floor No <span class="required">*</span></label>
+                    <select id="floor" name="floor" class="form-select" required>
+                      <option value="" disabled selected>Select Floor No...</option>
+                      <option value="Ground">Ground</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                    </select>
+                    <span class="form-hint">Ground floor or level 1 to 9</span>
+                  </div>
+
+                  <!-- Room No -->
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="room" id="room-label">Room No <span class="required" id="room-required-indicator">*</span></label>
+                    <input type="text" id="room" name="room" class="form-control" placeholder="Room 204 or Lab 3" required>
+                    <span class="form-hint" id="room-hint">Required for indoor zones; optional for outdoor areas</span>
+                  </div>
+
+                  <!-- Exact Location -->
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="exact_location">Exact Location <span class="required">*</span></label>
+                    <input type="text" id="exact_location" name="exact_location" class="form-control" placeholder="Near the water cooler, left side of the corridor" required>
+                    <span class="form-hint">Specific landmark, corner, or wing</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION B: Issue Details -->
+              <div style="margin-bottom: 24px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);">
+                  <span style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary-100); color: var(--primary-700); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">2</span>
+                  <h3 style="font-size: 15px; font-weight: 700; color: var(--text-main);">Issue Details</h3>
+                </div>
+
+                <!-- Category Selection (Interactive Chips) -->
+                <div class="form-group">
+                  <label class="form-label">Category of Issue <span class="required">*</span></label>
+                  <div class="chip-group">
+                    <div class="chip-option">
+                      <input type="radio" name="category" id="cat-cleaning" value="Cleaning" checked>
+                      <label for="cat-cleaning" class="chip-label">
+                        <i class="fas fa-broom" style="color: #0d9488;"></i> Cleaning
+                      </label>
+                    </div>
+                    <div class="chip-option">
+                      <input type="radio" name="category" id="cat-electrical" value="Electrical">
+                      <label for="cat-electrical" class="chip-label">
+                        <i class="fas fa-bolt" style="color: #eab308;"></i> Electrical
+                      </label>
+                    </div>
+                    <div class="chip-option">
+                      <input type="radio" name="category" id="cat-plumbing" value="Plumbing">
+                      <label for="cat-plumbing" class="chip-label">
+                        <i class="fas fa-faucet-drip" style="color: #0284c7;"></i> Plumbing
+                      </label>
+                    </div>
+                    <div class="chip-option">
+                      <input type="radio" name="category" id="cat-furniture" value="Furniture">
+                      <label for="cat-furniture" class="chip-label">
+                        <i class="fas fa-chair" style="color: #8b5cf6;"></i> Furniture
+                      </label>
+                    </div>
+                    <div class="chip-option">
+                      <input type="radio" name="category" id="cat-other" value="Other">
+                      <label for="cat-other" class="chip-label">
+                        <i class="fas fa-wrench" style="color: #64748b;"></i> Other
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Priority Selector -->
+                <div class="form-group">
+                  <label class="form-label">Urgency / Priority <span class="required">*</span></label>
+                  <div class="chip-group">
+                    <div class="chip-option">
+                      <input type="radio" name="priority" id="prio-low" value="Low">
+                      <label for="prio-low" class="chip-label">
+                        <i class="fas fa-arrow-down" style="color: var(--priority-low);"></i> Low (Routine)
+                      </label>
+                    </div>
+                    <div class="chip-option">
+                      <input type="radio" name="priority" id="prio-med" value="Medium" checked>
+                      <label for="prio-med" class="chip-label">
+                        <i class="fas fa-exclamation" style="color: var(--priority-medium);"></i> Medium (Normal)
+                      </label>
+                    </div>
+                    <div class="chip-option">
+                      <input type="radio" name="priority" id="prio-high" value="High">
+                      <label for="prio-high" class="chip-label">
+                        <i class="fas fa-fire" style="color: var(--priority-high);"></i> High (Urgent / Safety Hazard)
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Issue Description -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" for="description">Detailed Description <span class="required">*</span></label>
+                  <textarea id="description" name="description" class="form-control" placeholder="Describe the problem clearly (e.g. Water puddle forming near entrance door from leaking ceiling pipe. Slippery floor hazard.)" required maxlength="1000"></textarea>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                    <span class="form-hint">Please provide enough detail for maintenance staff to address the issue.</span>
+                    <span id="char-counter" style="font-size: 11px; color: var(--text-subtle);">0 / 1000</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION C: Attachment -->
+              <div style="margin-bottom: 24px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);">
+                  <span style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary-100); color: var(--primary-700); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">3</span>
+                  <h3 style="font-size: 15px; font-weight: 700; color: var(--text-main);">Attachment</h3>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">Attach Photo <span style="font-weight: 400; color: var(--text-muted);">(Optional - helpful for verification)</span></label>
+                  <div class="photo-upload-zone" id="drop-zone">
+                    <input type="file" id="photo" name="photo" accept="image/*">
+                    <div class="upload-icon">
+                      <i class="fas fa-cloud-arrow-up"></i>
+                    </div>
+                    <div class="upload-title">Click to upload or drag and drop photo</div>
+                    <div class="upload-subtitle">Supported formats: JPG, PNG, WEBP (Max 16 MB)</div>
+                  </div>
+
+                  <div id="photo-preview-container" style="display: none; text-align: center; margin-top: 12px;">
+                    <div class="photo-preview-wrap">
+                      <img id="photo-preview-img" class="photo-preview-img" src="" alt="Issue Preview">
+                      <button type="button" class="btn-remove-photo" id="btn-remove-photo" title="Remove photo">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;" id="photo-filename-label"></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div style="margin-top: 28px;">
+                <button type="submit" id="submit-report-btn" class="btn btn-primary btn-block btn-lg">
+                  <i class="fas fa-paper-plane"></i>
+                  <span id="submit-btn-text">Submit Maintenance Report</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- SECTION 2: My Reported Issues -->
+        <section id="my-reports-section" style="margin-top: 40px;">
+          <div class="card-header" style="border-bottom: none; margin-bottom: 12px;">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 700; color: var(--text-main);">My Submitted Reports</h2>
+              <p style="font-size: 13px; color: var(--text-muted);">Track real-time status and maintenance updates on your submitted issues</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-reports">
+              <i class="fas fa-rotate"></i> Refresh
+            </button>
+          </div>
+
+          <!-- Loading state -->
+          <div id="reports-loading" style="text-align: center; padding: 40px; color: var(--text-muted);">
+            <i class="fas fa-circle-notch fa-spin" style="font-size: 24px; color: var(--primary-600); margin-bottom: 10px;"></i>
+            <p style="font-size: 14px;">Loading your reports...</p>
+          </div>
+
+          <!-- Reports Container (Grid of cards) -->
+          <div id="reports-grid" class="issues-grid" style="display: none;"></div>
+
+          <!-- Empty State -->
+          <div id="reports-empty" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">
+              <i class="fas fa-clipboard-check"></i>
+            </div>
+            <h3>No Reports Yet</h3>
+            <p>You have not reported any issues so far. If you notice any campus cleanliness or repair needs, use the form above to let our maintenance crew know!</p>
+            <a href="#report-section" class="btn btn-primary btn-sm">Report an Issue Now</a>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Issue Detail & History Modal -->
+  <div class="modal-backdrop" id="detail-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-detail-title">Issue Details & History</h3>
+        <button class="modal-close-btn" id="modal-detail-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body" id="modal-detail-body">
+        <!-- Injected via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-detail-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/report.js"></script>
+</body>
+</html>

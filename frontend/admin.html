@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Smart Campus Maintenance Monitoring System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="sidebar-backdrop"></div>
+
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fas fa-shield-halved"></i>
+        </div>
+        <div class="brand-text">
+          <h2>Smart Campus</h2>
+          <p>Admin Command Center</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Overview</div>
+        <a href="#section-analytics" class="nav-item active" id="nav-analytics">
+          <i class="fas fa-chart-pie"></i>
+          <span>Analytics & Stats</span>
+        </a>
+        <a href="#section-issues" class="nav-item" id="nav-issues">
+          <i class="fas fa-table-list"></i>
+          <span>Maintenance Tasks</span>
+        </a>
+
+        <div class="nav-label">Administration</div>
+        <a href="#section-users" class="nav-item" id="nav-users">
+          <i class="fas fa-users-gear"></i>
+          <span>User Management</span>
+        </a>
+        <a href="#section-history" class="nav-item" id="nav-history">
+          <i class="fas fa-clock-rotate-left"></i>
+          <span>System Audit Log</span>
+        </a>
+
+        <div class="nav-label">Quick Links</div>
+        <a href="/supervisor.html" class="nav-item">
+          <i class="fas fa-clipboard-list"></i>
+          <span>Supervisor Board</span>
+        </a>
+        <a href="/report.html" class="nav-item">
+          <i class="fas fa-plus-circle"></i>
+          <span>Report Issue</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span style="font-size: 11px; color: #64748b;">Admin Console &bull; v1.0</span>
+        <button class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" aria-label="Toggle Menu">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="page-title-box">
+            <h1>Campus Operations & Intelligence</h1>
+            <p>Comprehensive monitoring, performance metrics, user access, and audit trail</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+            <i class="fas fa-moon"></i>
+          </button>
+
+          <div class="user-profile-badge">
+            <div class="user-avatar" id="topbar-user-avatar">A</div>
+            <div class="user-info">
+              <span class="user-name" id="topbar-user-name">System Administrator</span>
+              <span class="user-role-tag" id="topbar-user-role">ADMIN</span>
+            </div>
+          </div>
+
+          <button class="btn-logout" id="logout-btn" title="Logout">
+            <i class="fas fa-arrow-right-from-bracket"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Container -->
+      <div class="page-container">
+
+        <!-- ========================================================
+             SECTION 1: Summary Counters
+             ======================================================== -->
+        <div class="stats-grid">
+          <div class="stat-card stat-total">
+            <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+            <div class="stat-content">
+              <span class="stat-value" id="admin-stat-total">0</span>
+              <span class="stat-label">Total Issues Logged</span>
+            </div>
+          </div>
+
+          <div class="stat-card stat-pending">
+            <div class="stat-icon"><i class="fas fa-hourglass-start"></i></div>
+            <div class="stat-content">
+              <span class="stat-value" id="admin-stat-pending">0</span>
+              <span class="stat-label">Pending Triage</span>
+            </div>
+          </div>
+
+          <div class="stat-card stat-inprogress">
+            <div class="stat-icon"><i class="fas fa-person-digging"></i></div>
+            <div class="stat-content">
+              <span class="stat-value" id="admin-stat-inprogress">0</span>
+              <span class="stat-label">In Progress</span>
+            </div>
+          </div>
+
+          <div class="stat-card stat-completed">
+            <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
+            <div class="stat-content">
+              <span class="stat-value" id="admin-stat-completed">0</span>
+              <span class="stat-label">Resolved & Completed</span>
+            </div>
+          </div>
+
+          <div class="stat-card stat-high">
+            <div class="stat-icon"><i class="fas fa-fire"></i></div>
+            <div class="stat-content">
+              <span class="stat-value" id="admin-stat-high">0</span>
+              <span class="stat-label">High Priority Active</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================
+             SECTION 2: Analytics & Visual Charts (Chart.js)
+             ======================================================== -->
+        <section id="section-analytics" style="margin-bottom: 36px;">
+          <div class="card-header" style="border: none; margin-bottom: 8px;">
+            <div class="card-title">
+              <i class="fas fa-chart-column" style="color: var(--primary-600);"></i>
+              <span>Operational Analytics & Campus Distribution</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-analytics">
+              <i class="fas fa-arrows-rotate"></i> Refresh Analytics
+            </button>
+          </div>
+
+          <div class="charts-grid">
+            <!-- Chart 1: Status Breakdown -->
+            <div class="chart-card">
+              <div class="card-header" style="padding-bottom: 10px; margin-bottom: 10px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-main);">
+                  <i class="fas fa-chart-pie" style="color: var(--brand-blue-500); margin-right: 6px;"></i> Issues by Current Status
+                </h4>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-status"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 2: Category Breakdown -->
+            <div class="chart-card">
+              <div class="card-header" style="padding-bottom: 10px; margin-bottom: 10px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-main);">
+                  <i class="fas fa-tag" style="color: var(--primary-600); margin-right: 6px;"></i> Issues by Category
+                </h4>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-category"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 3: Zone Breakdown -->
+            <div class="chart-card">
+              <div class="card-header" style="padding-bottom: 10px; margin-bottom: 10px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-main);">
+                  <i class="fas fa-map-location-dot" style="color: #8b5cf6; margin-right: 6px;"></i> Issues by Campus Zone
+                </h4>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-zone"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 3: Full Tasks Table with Filters
+             ======================================================== -->
+        <section id="section-issues" style="margin-bottom: 40px;">
+          <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="card-header" style="padding: 20px 24px; margin-bottom: 0;">
+              <div class="card-title">
+                <i class="fas fa-list-check" style="color: var(--primary-600);"></i>
+                <span>Complete Campus Task Registry</span>
+                <span id="admin-issues-count" class="badge" style="background: var(--bg-subtle); color: var(--text-muted); font-size: 11px;">0 tasks</span>
+              </div>
+            </div>
+
+            <!-- Filter Controls inside Card -->
+            <div style="padding: 16px 24px; background: var(--bg-subtle); border-bottom: 1px solid var(--border-subtle);">
+              <div class="filter-bar" style="margin-bottom: 0; padding: 0; background: transparent; border: none; box-shadow: none;">
+                <div class="search-input-wrap">
+                  <i class="fas fa-search"></i>
+                  <input type="text" id="admin-filter-search" class="form-control" placeholder="Search tasks by zone, floor, room, location, description...">
+                </div>
+
+                <div class="filter-group">
+                  <select id="admin-filter-zone" class="form-select" style="min-width: 130px;">
+                    <option value="all">All Zones</option>
+                    <option value="College Building">College Building</option>
+                    <option value="Euphoria Stairs">Euphoria Stairs</option>
+                    <option value="Canteen">Canteen</option>
+                    <option value="Open Canteen">Open Canteen</option>
+                    <option value="Samvad">Samvad</option>
+                    <option value="Backcourt">Backcourt</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <select id="admin-filter-floor" class="form-select" style="min-width: 100px;">
+                    <option value="all">All Floors</option>
+                    <option value="Ground">Ground</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <select id="admin-filter-status" class="form-select" style="min-width: 110px;">
+                    <option value="all">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <select id="admin-filter-priority" class="form-select" style="min-width: 110px;">
+                    <option value="all">All Priorities</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <select id="admin-filter-category" class="form-select" style="min-width: 120px;">
+                    <option value="all">All Categories</option>
+                    <option value="Cleaning">Cleaning</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Plumbing">Plumbing</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <button class="btn btn-secondary btn-sm" id="admin-btn-reset-filters">
+                  <i class="fas fa-rotate-left"></i> Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="admin-issues-loading" style="text-align: center; padding: 50px; color: var(--text-muted);">
+              <i class="fas fa-circle-notch fa-spin" style="font-size: 26px; color: var(--primary-600); margin-bottom: 10px;"></i>
+              <p style="font-size: 14px;">Loading campus tasks...</p>
+            </div>
+
+            <!-- Task Table -->
+            <div class="table-responsive" id="admin-issues-table-wrap" style="border: none; border-radius: 0; display: none;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Campus Location & Description</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>Reporter</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-issues-tbody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="admin-issues-empty" class="empty-state" style="display: none; border: none; margin: 0;">
+              <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+              <h3>No Tasks Found</h3>
+              <p>No maintenance tasks match the chosen filters.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 4: User Management (Admin Only)
+             ======================================================== -->
+        <section id="section-users" style="margin-bottom: 40px;">
+          <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="card-header" style="padding: 20px 24px; margin-bottom: 0;">
+              <div class="card-title">
+                <i class="fas fa-users-gear" style="color: var(--primary-600);"></i>
+                <span>User Account Management</span>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btn-open-create-user">
+                <i class="fas fa-user-plus"></i> Add New User
+              </button>
+            </div>
+
+            <div class="table-responsive" style="border: none; border-radius: 0;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Created At</th>
+                    <th style="text-align: right;">Manage</th>
+                  </tr>
+                </thead>
+                <tbody id="users-tbody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 5: Global Maintenance History Log (Timeline)
+             ======================================================== -->
+        <section id="section-history" style="margin-bottom: 40px;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fas fa-clock-rotate-left" style="color: var(--primary-600);"></i>
+                <span>Campus Maintenance History Audit Log</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-refresh-history">
+                <i class="fas fa-arrows-rotate"></i> Refresh Log
+              </button>
+            </div>
+
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">
+              Chronological log of all campus maintenance activity: reports filed, staff dispatches, priority adjustments, and task completions.
+            </p>
+
+            <div id="history-loading" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              <i class="fas fa-circle-notch fa-spin" style="font-size: 24px; color: var(--primary-600); margin-bottom: 10px;"></i>
+              <p>Loading history events...</p>
+            </div>
+
+            <div class="timeline" id="global-history-timeline" style="display: none;">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Create User Modal -->
+  <div class="modal-backdrop" id="create-user-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-user-plus" style="color: var(--primary-600);"></i>
+          <span>Create New System User</span>
+        </h3>
+        <button class="modal-close-btn" id="create-user-close"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="create-user-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="new-user-name">Full Name <span class="required">*</span></label>
+            <input type="text" id="new-user-name" class="form-control" placeholder="e.g. Maya Patel" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="new-user-username">Username <span class="required">*</span></label>
+            <input type="text" id="new-user-username" class="form-control" placeholder="e.g. mayap" required autocomplete="off">
+            <span class="form-hint">Unique username for login.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="new-user-password">Password <span class="required">*</span></label>
+            <input type="password" id="new-user-password" class="form-control" placeholder="Minimum 6 characters" minlength="6" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="new-user-role">System Role <span class="required">*</span></label>
+            <select id="new-user-role" class="form-select" required>
+              <option value="" disabled selected>Select user role...</option>
+              <option value="reporter">Reporter (Student / General Staff)</option>
+              <option value="staff">Cleaning & Maintenance Staff</option>
+              <option value="supervisor">Facility Supervisor</option>
+              <option value="admin">System Administrator</option>
+            </select>
+            <span class="form-hint">Controls permissions and accessible dashboard features.</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="create-user-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="create-user-submit">
+            <i class="fas fa-check"></i> Create User Account
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detail & Timeline Modal -->
+  <div class="modal-backdrop" id="detail-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-detail-title">Task Details & Timeline</h3>
+        <button class="modal-close-btn" id="modal-detail-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body" id="modal-detail-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-detail-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
