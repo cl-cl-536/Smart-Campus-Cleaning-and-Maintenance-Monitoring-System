@@ -50,32 +50,6 @@ Smart-Campus-Cleaning-and-Maintenance-Monitoring-System/
 │   ├── css/style.css
 │   └── js/ (api.js, auth.js, report.js, supervisor.js, staff.js, admin.js)
 └── README.md
-```
 
-## How to Run
-git clone <your-repo-url>
-cd Smart-Campus-Cleaning-and-Maintenance-Monitoring-System/backend
-pip install -r requirements.txt
-python app.py
 
-Then open **http://localhost:5000** in your browser.
 
-## Demo Accounts
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | admin | admin123 |
-| Supervisor | supervisor | super123 |
-| Cleaning Staff | staff1 | staff123 |
-| Reporter | reporter | report123 |
-
-## Team
-- Member 1: <name>
-- Member 2: <name>
-
-##  Working Together
-1. Pull before you start: `git pull`
-2. Make your changes
-3. `git add .` then `git commit -m "message"` then `git push`
-
-## License
-For educational use (HMI course project).
