@@ -108,8 +108,8 @@ Smart-Campus-Cleaning-and-Maintenance-Monitoring-System/
 │       ├── staff.js           # Staff workload cards, Start Work, and completion modal
 │       └── admin.js           # Chart.js visualization, user CRUD, and maintenance timeline
 └── README.md
-```
 
+<<<<<<< HEAD
 ---
 
 ## How to Run
@@ -242,3 +242,7 @@ You can log in directly using the quick-fill buttons on the login screen or ente
 
 ## License
 For educational use (HMI course project).
+=======
+
+
+>>>>>>> f75342ee5cfdfb5c2af8f6408f42dced0d2d153a
